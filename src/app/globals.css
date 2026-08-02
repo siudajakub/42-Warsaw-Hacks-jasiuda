@@ -1,0 +1,980 @@
+/* ============================================================================
+   42 HIGHLIGHTS — design system
+   Built for one specific screen: a 55" TV, 1920x1080, viewed from 4 metres.
+   Consequences that drive every decision below:
+     - Nothing scrolls. Ever. The stage is exactly one viewport.
+     - Smallest type on screen is ~19px at 1080p. Labels are set in mono caps.
+     - Layout scales off viewport width, so the same build fills a 4K panel.
+     - Motion is continuous but slow. Nothing blinks; a TV runs for 10 hours.
+   ============================================================================ */
+
+@font-face {
+  font-family: "Archivo";
+  src: url("/fonts/archivo-latin.woff2") format("woff2");
+  font-weight: 300 900;
+  font-stretch: 75% 125%;
+  font-display: block;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  /* Polish, Czech, Turkish, Vietnamese-adjacent diacritics. 42 Warsaw is
+     international; "Wiśniewski" and "Öztürk" must not fall back. */
+  font-family: "Archivo";
+  src: url("/fonts/archivo-latin-ext.woff2") format("woff2");
+  font-weight: 300 900;
+  font-stretch: 75% 125%;
+  font-display: block;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+    U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF,
+    U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/jbmono-latin.woff2") format("woff2");
+  font-weight: 300 800;
+  font-display: block;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/jbmono-latin-ext.woff2") format("woff2");
+  font-weight: 300 800;
+  font-display: block;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+    U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF,
+    U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  /* ---- surface ---------------------------------------------------------- */
+  --ink-000: #05070a;
+  --ink-100: #080b10;
+  --ink-200: #0d1118;
+  --ink-300: #131924;
+  --ink-400: #1b2331;
+
+  --line: rgb(255 255 255 / 0.07);
+  --line-strong: rgb(255 255 255 / 0.14);
+
+  /* ---- text ------------------------------------------------------------- */
+  --fg: #e8edf4;
+  --fg-dim: #9aa6b8;
+  --fg-faint: #5d6879;
+
+  /* ---- signal ----------------------------------------------------------- */
+  --live: #3ee8a0; /* online, positive delta, "now" */
+  --flame: #ff6b35; /* validations and celebration */
+  --gold: #ffc857; /* perfect marks, first place */
+  --sky: #5ec8ff; /* neutral data, evaluations */
+  --violet: #a98bff; /* rank / structural accents */
+  --danger: #ff4d6d; /* errors and destructive states */
+
+  /* ---- rhythm ----------------------------------------------------------- */
+  --gap: 1.5rem;
+  --pad: 2.25rem;
+  --radius: 3px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* The entire layout is expressed in rem and this one line scales it to the
+   panel. 1080p -> 16px, 1440p -> 21px, 4K -> 32px. Same build, any TV. */
+html {
+  font-size: clamp(11px, 0.8333vw, 32px);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--ink-000);
+  color: var(--fg);
+  font-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* ============================================================================
+   Typography primitives
+   ========================================================================== */
+
+.kicker {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+
+.label {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+.num {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "zero" 1;
+  letter-spacing: -0.02em;
+}
+
+.display {
+  font-weight: 800;
+  font-stretch: 112%;
+  letter-spacing: -0.025em;
+  line-height: 0.9;
+}
+
+/* ============================================================================
+   App shell
+   ========================================================================== */
+
+.shell {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  height: 100dvh;
+  isolation: isolate;
+}
+
+/* --- ambient background: three stacked layers, all pointer-events:none ---- */
+
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+      120% 90% at 78% -10%,
+      rgb(30 46 70 / 0.55) 0%,
+      transparent 55%
+    ),
+    radial-gradient(90% 70% at 8% 105%, rgb(24 52 44 / 0.45) 0%, transparent 60%),
+    var(--ink-000);
+}
+
+/* Blueprint grid — sits under everything, gives the panel physical depth. */
+.bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 5.5rem 5.5rem;
+  mask-image: radial-gradient(115% 95% at 50% 40%, #000 20%, transparent 78%);
+  opacity: 0.55;
+}
+
+/* Slow drifting light. 48s cycle — below the threshold where a viewer
+   consciously notices motion, above the threshold where it feels static. */
+.bg::after {
+  content: "";
+  position: absolute;
+  inset: -25%;
+  background: conic-gradient(
+    from 200deg at 60% 40%,
+    transparent 0deg,
+    rgb(62 232 160 / 0.055) 70deg,
+    transparent 150deg,
+    rgb(94 200 255 / 0.05) 240deg,
+    transparent 330deg
+  );
+  animation: drift 48s linear infinite;
+  filter: blur(30px);
+}
+
+@keyframes drift {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================================================
+   Header
+   ========================================================================== */
+
+.header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--gap);
+  padding: 1.35rem var(--pad) 1.1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand__logo {
+  display: block;
+  width: 4rem;
+  height: 2.6rem;
+  object-fit: contain;
+}
+
+.brand__divider {
+  align-self: stretch;
+  width: 0.18rem;
+  min-height: 2.35rem;
+  background: var(--flame);
+}
+
+.brand__word {
+  display: block;
+  font-size: 1.55rem;
+  font-weight: 800;
+  font-stretch: 118%;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* --- scene rail: shows where we are in the rotation ---------------------- */
+
+.rail {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-self: center;
+}
+
+.rail__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  transition: color 0.5s var(--ease-out), background 0.5s var(--ease-out);
+  overflow: hidden;
+}
+
+.rail__item[data-active="true"] {
+  color: var(--fg);
+  background: rgb(255 255 255 / 0.05);
+}
+
+/* Progress fill doubles as the scene timer — the wall tells you how long
+   until it changes, so nobody stands there wondering if it froze. */
+.rail__fill {
+  position: absolute;
+  inset: 0;
+  transform-origin: left;
+  background: rgb(255 255 255 / 0.07);
+}
+
+.rail__dot {
+  width: 0.3rem;
+  height: 0.3rem;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.45;
+}
+
+.rail__item[data-active="true"] .rail__dot {
+  opacity: 1;
+  background: var(--live);
+  box-shadow: 0 0 0.6rem var(--live);
+}
+
+.rail__label {
+  position: relative;
+}
+
+/* --- status cluster ------------------------------------------------------ */
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.status__snapshot {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  font-family: "JetBrains Mono", monospace;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.status__snapshot span {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+
+.status__snapshot strong {
+  font-size: 1.75rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  white-space: nowrap;
+}
+
+.pill--live {
+  color: var(--live);
+  border-color: rgb(62 232 160 / 0.35);
+  background: rgb(62 232 160 / 0.07);
+}
+
+.pill--warn {
+  color: var(--danger);
+  border-color: rgb(255 77 109 / 0.35);
+  background: rgb(255 77 109 / 0.07);
+}
+
+.beacon {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: currentColor;
+  animation: beacon 2.4s var(--ease-in-out) infinite;
+}
+
+@keyframes beacon {
+  0%,
+100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 currentColor;
+  }
+  50% {
+    opacity: 0.55;
+    box-shadow: 0 0 0 0.3rem rgb(255 255 255 / 0);
+  }
+}
+
+.refresh {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  opacity: 0.42;
+  transition: opacity 0.25s, color 0.25s, border-color 0.25s, background 0.25s;
+}
+
+.refresh:hover,
+.refresh:focus-visible {
+  color: var(--fg);
+  border-color: var(--fg-faint);
+  background: rgb(255 255 255 / 0.04);
+  opacity: 1;
+}
+
+.refresh[data-busy="true"] {
+  color: var(--sky);
+  border-color: rgb(94 200 255 / 0.4);
+  opacity: 1;
+}
+
+.refresh[data-busy="true"] svg {
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================================================
+   Stage
+   ========================================================================== */
+
+.stage {
+  position: relative;
+  overflow: hidden;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 1.75rem var(--pad) 1.25rem;
+}
+
+.scene__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap);
+  padding-bottom: 0.95rem;
+  margin-bottom: 1.1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.scene__title {
+  font-size: 2.75rem;
+  font-weight: 800;
+  font-stretch: 115%;
+  letter-spacing: -0.03em;
+  line-height: 0.92;
+}
+
+
+.scene__body {
+  flex: 1;
+  min-height: 0;
+}
+
+/* ============================================================================
+   Panels & primitives
+   ========================================================================== */
+
+.panel {
+  position: relative;
+  background: linear-gradient(
+    155deg,
+    rgb(255 255 255 / 0.045),
+    rgb(255 255 255 / 0.012)
+  );
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.15rem 1.25rem;
+  min-height: 0;
+}
+
+/* HUD corner tick — a single bracket, not four. Reads as instrumentation
+   rather than decoration. */
+.panel--ticked::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-top: 2px solid var(--line-strong);
+  border-left: 2px solid var(--line-strong);
+  border-top-left-radius: var(--radius);
+}
+
+/* --- avatar monogram ----------------------------------------------------- */
+
+.mono {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border-radius: 50%;
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--fg);
+  background: var(--ink-300);
+  border: 1px solid var(--line-strong);
+  overflow: hidden;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.mono img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Presence ring: a full ring means "in the cluster right now". */
+.mono[data-online="true"] {
+  box-shadow: 0 0 0 2px var(--ink-000), 0 0 0 3.5px var(--live);
+}
+
+/* --- level bar ----------------------------------------------------------- */
+
+/* --- delta chip ---------------------------------------------------------- */
+
+/* ============================================================================
+   Utility
+   ========================================================================== */
+
+.row {
+  display: flex;
+  align-items: center;
+}
+.grow {
+  flex: 1;
+  min-width: 0;
+}
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg::after,
+.beacon,
+.confetti span,
+.refresh[data-busy="true"] svg {
+    animation: none;
+  }
+}
+
+/* The product is TV-first, but operators still open it from a phone. Below the
+   tablet breakpoint the fixed stage becomes a normal document: scenes stack
+   and scroll while the 16:9 wall layout above remains untouched. */
+@media (max-width: 700px) {
+  :root {
+    --gap: 1rem;
+    --pad: 1rem;
+  }
+
+  html {
+    font-size: 14px;
+  }
+
+  html,
+body {
+    height: auto;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .shell {
+    display: block;
+    height: auto;
+    min-height: 100dvh;
+  }
+
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.75rem;
+    padding: 0.8rem var(--pad) 0.65rem;
+    background: rgb(5 7 10 / 0.94);
+    backdrop-filter: blur(14px);
+  }
+
+  .brand {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .status__snapshot,
+.refresh {
+    display: none;
+  }
+
+  .status {
+    grid-column: 2;
+    grid-row: 1;
+    gap: 0.4rem;
+  }
+
+  .pill {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+  }
+
+  .rail {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: stretch;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rail__item {
+    flex: none;
+    padding: 0.4rem 0.65rem;
+  }
+
+  .stage {
+    overflow: visible;
+  }
+
+  .scene {
+    position: relative;
+    inset: auto;
+    min-height: calc(100dvh - 8rem);
+    padding: 1.25rem var(--pad) 1.5rem;
+  }
+
+  .scene__head {
+    display: block;
+  }
+
+  .scene__title {
+    font-size: 2.15rem;
+    line-height: 1;
+  }
+
+  .scene__body {
+    flex: none;
+    min-height: auto;
+  }
+
+}
+
+/* ============================================================================
+   2026 light redesign — soft utility for the Social Space wall
+
+   The layout above remains the source of truth. This layer changes only the
+   visual system: a pale ambient canvas, calm translucent surfaces, Manrope
+   typography and pastel semantic colour. Panels are intentionally close to
+   opaque so the dashboard still works in MagicInfo browsers without blur.
+   ========================================================================== */
+
+:root {
+  --ink-000: #e3e7ef;
+  --ink-100: #e9edf3;
+  --ink-200: #f0f2f6;
+  --ink-300: #f7f8fa;
+  --ink-400: #ffffff;
+
+  --surface: rgb(255 255 255 / 0.94);
+  --surface-soft: rgb(255 255 255 / 0.82);
+  --surface-muted: rgb(242 244 248 / 0.86);
+  --line: rgb(32 38 58 / 0.09);
+  --line-strong: rgb(32 38 58 / 0.16);
+
+  --fg: #20263a;
+  --fg-dim: #6f7684;
+  --fg-faint: #969caa;
+
+  --live: #55b997;
+  --flame: #e85b36;
+  --gold: #e2ae4c;
+  --sky: #78aedd;
+  --violet: #9a82cf;
+  --danger: #d46d79;
+
+  --gap: 1.5rem;
+  --pad: 2.25rem;
+  --radius: 0.9rem;
+  --radius-panel: 1.5rem;
+  --shadow-panel: 0 1.1rem 2.5rem rgb(45 55 76 / 0.1);
+}
+
+html,
+body {
+  background: var(--ink-000);
+  color: var(--fg);
+  font-family: "Manrope Variable", "Archivo", ui-sans-serif, system-ui, sans-serif;
+}
+
+button {
+  font-family: inherit;
+}
+
+.kicker,
+.label,
+.num {
+  font-family: "Manrope Variable", "Archivo", ui-sans-serif, system-ui, sans-serif;
+}
+
+.kicker {
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.035em;
+  text-transform: none;
+  color: var(--fg-faint);
+}
+
+.label {
+  font-size: 0.82rem;
+  font-weight: 650;
+  letter-spacing: 0.015em;
+  text-transform: none;
+  color: var(--fg-dim);
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: -0.025em;
+}
+
+.display {
+  font-weight: 720;
+  font-stretch: normal;
+  letter-spacing: -0.035em;
+}
+
+.bg {
+  background:
+    radial-gradient(72% 72% at 8% 8%, rgb(255 255 255 / 0.88), transparent 68%),
+    radial-gradient(62% 78% at 96% 4%, rgb(151 166 198 / 0.28), transparent 72%),
+    radial-gradient(60% 70% at 72% 102%, rgb(120 174 221 / 0.15), transparent 72%),
+    linear-gradient(135deg, #e8ebf2 0%, #e2e7ef 54%, #dce2ed 100%);
+}
+
+.bg::before {
+  background-image: none;
+  opacity: 0;
+}
+
+.bg::after {
+  inset: 0;
+  background:
+    radial-gradient(32rem 26rem at 22% 28%, rgb(255 255 255 / 0.34), transparent 70%),
+    radial-gradient(28rem 22rem at 82% 72%, rgb(154 130 207 / 0.08), transparent 72%);
+  animation: none;
+  filter: none;
+}
+
+.header {
+  border-bottom-color: rgb(255 255 255 / 0.74);
+  background: rgb(247 248 250 / 0.82);
+  box-shadow: 0 0.45rem 1.6rem rgb(45 55 76 / 0.055);
+  backdrop-filter: blur(18px) saturate(115%);
+  -webkit-backdrop-filter: blur(18px) saturate(115%);
+}
+
+.brand {
+  align-items: center;
+}
+
+.brand__logo {
+  width: 4rem;
+  height: 2.6rem;
+}
+
+.brand__divider {
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ef6a46, var(--flame));
+}
+
+.brand__word {
+  font-size: 1.48rem;
+  font-weight: 780;
+  font-stretch: normal;
+  letter-spacing: 0.045em;
+}
+
+.rail {
+  gap: 0.35rem;
+  padding: 0.28rem;
+  border: 1px solid rgb(255 255 255 / 0.72);
+  border-radius: 1.1rem;
+  background: rgb(229 233 240 / 0.72);
+}
+
+.rail__item {
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.82rem;
+  font-family: "Manrope Variable", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--fg-dim);
+}
+
+.rail__item[data-active="true"] {
+  color: var(--fg);
+  background: rgb(255 255 255 / 0.9);
+  box-shadow: 0 0.3rem 0.85rem rgb(45 55 76 / 0.08);
+}
+
+.rail__fill {
+  inset: auto 0.9rem 0.22rem;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--sky);
+}
+
+.rail__dot {
+  display: none;
+}
+
+.status {
+  gap: 0.8rem;
+}
+
+.status__snapshot {
+  font-family: "Manrope Variable", sans-serif;
+  color: var(--fg);
+}
+
+.status__snapshot span {
+  color: var(--fg-faint);
+  font-size: 0.64rem;
+  font-weight: 700;
+}
+
+.status__snapshot strong {
+  font-size: 1.5rem;
+  font-weight: 650;
+}
+
+.pill {
+  padding: 0.45rem 0.72rem;
+  border-color: rgb(255 255 255 / 0.76);
+  border-radius: 999px;
+  font-family: "Manrope Variable", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--fg-dim);
+  background: rgb(255 255 255 / 0.72);
+  box-shadow: 0 0.3rem 0.8rem rgb(45 55 76 / 0.055);
+}
+
+.pill--live {
+  color: #277c63;
+  border-color: rgb(85 185 151 / 0.24);
+  background: rgb(85 185 151 / 0.14);
+}
+
+.pill--warn {
+  color: #a34855;
+  border-color: rgb(212 109 121 / 0.28);
+  background: rgb(212 109 121 / 0.14);
+}
+
+.beacon {
+  width: 0.4rem;
+  height: 0.4rem;
+  box-shadow: none;
+}
+
+.refresh {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-color: rgb(255 255 255 / 0.76);
+  border-radius: 50%;
+  color: var(--fg-dim);
+  background: rgb(255 255 255 / 0.66);
+  box-shadow: 0 0.3rem 0.8rem rgb(45 55 76 / 0.055);
+  opacity: 0.72;
+}
+
+.refresh:hover,
+.refresh:focus-visible {
+  color: var(--fg);
+  border-color: rgb(120 174 221 / 0.45);
+  background: rgb(255 255 255 / 0.94);
+  box-shadow: 0 0 0 3px rgb(120 174 221 / 0.16);
+}
+
+.refresh[data-busy="true"] {
+  color: #3c7eaf;
+  border-color: rgb(120 174 221 / 0.42);
+}
+
+.scene__head {
+  border-bottom-color: rgb(255 255 255 / 0.62);
+}
+
+.scene__title {
+  font-size: 2.7rem;
+  font-weight: 690;
+  font-stretch: normal;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+}
+
+.panel {
+  background: var(--surface);
+  border-color: rgb(255 255 255 / 0.78);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-panel);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .panel {
+    background: var(--surface-soft);
+    backdrop-filter: blur(18px) saturate(115%);
+    -webkit-backdrop-filter: blur(18px) saturate(115%);
+  }
+}
+
+.panel--ticked::before {
+  display: none;
+}
+
+.mono {
+  font-family: "Manrope Variable", sans-serif;
+  color: var(--fg);
+  background: rgb(255 255 255 / 0.76);
+  border-color: rgb(32 38 58 / 0.1);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.55);
+}
+
+.mono[data-online="true"] {
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 0.9), 0 0 0 4px var(--live);
+}
+
+@media (max-width: 700px) {
+  .header {
+    background: rgb(242 244 248 / 0.94);
+    backdrop-filter: blur(18px) saturate(115%);
+    -webkit-backdrop-filter: blur(18px) saturate(115%);
+  }
+
+  .rail {
+    background: rgb(225 230 238 / 0.78);
+  }
+}

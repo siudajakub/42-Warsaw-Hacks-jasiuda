@@ -1,0 +1,23 @@
+services:
+  highlights:
+    build: .
+    image: 42-highlights:latest
+    container_name: 42-highlights
+    restart: unless-stopped
+    ports:
+      - "4242:4242"
+    env_file:
+      - .env
+    environment:
+      # Live credentials are required through .env.
+      HIGHLIGHTS_CACHE_PATH: /app/.cache/snapshot.json
+    volumes:
+      - highlights-cache:/app/.cache
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  highlights-cache:

@@ -1,0 +1,396 @@
+.highlightsStrip {
+  --people-ink: #202638;
+  --people-muted: #7f899c;
+  --people-line: rgba(76, 91, 119, 0.14);
+  --people-paper: rgba(249, 251, 254, 0.86);
+  align-items: stretch;
+  background:
+    linear-gradient(90deg, rgba(232, 91, 54, 0.075), transparent 20%),
+    var(--people-paper);
+  border-block: 1px solid var(--people-line);
+  color: var(--people-ink);
+  display: grid;
+  grid-template-columns: 7.5rem repeat(5, minmax(0, 1fr));
+  min-height: 3.15rem;
+  padding-inline: 2.25rem;
+}
+
+.highlightsLabel,
+.highlightsMetric {
+  align-items: center;
+  display: flex;
+}
+
+.highlightsLabel {
+  color: #e85b36;
+  font-size: 0.69rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.highlightsMetric {
+  border-left: 1px solid var(--people-line);
+  gap: 0.46rem;
+  justify-content: center;
+  min-width: 0;
+  padding: 0.34rem 0.85rem;
+}
+
+.highlightsMetric strong {
+  color: var(--metric-tint, var(--people-ink));
+  font-size: 1.12rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.035em;
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.highlightsMetric span {
+  color: var(--people-muted);
+  font-size: 0.68rem;
+  line-height: 1.15;
+}
+
+.highlightsMetric small {
+  color: #a1a9b8;
+  display: block;
+  font-size: 0.59rem;
+  margin-top: 0.12rem;
+}
+
+.connectBoard {
+  --people-ink: #202638;
+  --people-muted: #8a93a5;
+  --people-line: rgba(65, 81, 111, 0.14);
+  --peer: #8a6dcc;
+  --team: #e09938;
+  --assist: #378f77;
+  color: var(--people-ink);
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: 1fr 1fr 0.92fr;
+  grid-template-rows: minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+}
+
+.connectColumn {
+  background: rgba(251, 252, 254, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 1.45rem;
+  box-shadow: 0 0.9rem 2.2rem rgba(65, 81, 111, 0.08);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  padding: 1.05rem 1.12rem 0.8rem;
+  position: relative;
+}
+
+.connectColumn::before {
+  background: var(--column-tint, var(--peer));
+  content: "";
+  height: 0.22rem;
+  inset: 0 1.4rem auto;
+  position: absolute;
+}
+
+.connectColumn[data-kind="team"] {
+  --column-tint: var(--team);
+}
+
+.connectColumn[data-kind="evaluators"] {
+  --column-tint: var(--assist);
+}
+
+.connectHead {
+  align-items: center;
+  border-bottom: 1px solid var(--people-line);
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.48rem;
+  padding: 0.48rem 0 0.72rem;
+}
+
+.connectHead div {
+  min-width: 0;
+}
+
+.connectHead h3 {
+  font-size: 1.14rem;
+  letter-spacing: -0.025em;
+  margin: 0;
+}
+
+.connectCount {
+  color: var(--column-tint, var(--peer));
+  font-size: 2rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.06em;
+  line-height: 1;
+}
+
+.sectionStatus {
+  border: 1px solid color-mix(in srgb, var(--column-tint, var(--peer)) 28%, transparent);
+  border-radius: 999px;
+  color: var(--column-tint, var(--peer));
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin-left: 0.35rem;
+  padding: 0.16rem 0.34rem;
+  text-transform: uppercase;
+}
+
+.requestList,
+.evaluatorList {
+  display: grid;
+  flex: 1;
+  min-height: 0;
+}
+
+.requestList {
+  grid-template-rows: repeat(6, minmax(0, 1fr));
+}
+
+.requestCard,
+.evaluatorRow {
+  align-items: center;
+  border-bottom: 1px solid var(--people-line);
+  display: grid;
+  min-height: 0;
+}
+
+.requestCard {
+  animation: cardReveal 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  gap: 0.78rem;
+  grid-template-columns: auto minmax(0, 0.82fr) minmax(0, 1.18fr);
+}
+
+.requestCard:last-child,
+.evaluatorRow:last-child {
+  border-bottom: 0;
+}
+
+.personCopy,
+.projectCopy {
+  min-width: 0;
+}
+
+.personCopy strong {
+  display: block;
+  font-size: 1.08rem;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.personCopy span {
+  color: var(--people-muted);
+  display: block;
+  font-size: 0.78rem;
+  margin-top: 0.16rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.projectCopy strong {
+  display: block;
+  font-size: 0.94rem;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.projectCopy span {
+  color: var(--people-muted);
+  display: block;
+  font-size: 0.72rem;
+  margin-top: 0.16rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.projectCopy {
+  background: color-mix(in srgb, var(--column-tint, var(--peer)) 7%, transparent);
+  border-left: 2px solid color-mix(in srgb, var(--column-tint, var(--peer)) 55%, transparent);
+  border-radius: 0 0.55rem 0.55rem 0;
+  padding: 0.42rem 0.52rem;
+}
+
+.evaluatorList {
+  grid-template-rows: repeat(6, minmax(0, 1fr));
+}
+
+.evaluatorRow {
+  gap: 0.7rem;
+  grid-template-columns: 1.35rem auto minmax(0, 1fr) auto;
+}
+
+.evaluatorRank {
+  color: #a4abba;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.evaluatorCount {
+  color: var(--assist);
+  font-size: 1.32rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+  text-align: right;
+}
+
+.evaluatorCount small {
+  color: var(--people-muted);
+  display: block;
+  font-size: 0.6rem;
+  letter-spacing: 0;
+}
+
+.connectEmpty {
+  align-items: center;
+  color: var(--people-muted);
+  display: flex;
+  flex: 1;
+  font-size: 0.82rem;
+  justify-content: center;
+  text-align: center;
+}
+
+.avatar {
+  align-items: center;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--avatar-tint) 18%, white), white);
+  border: 1px solid color-mix(in srgb, var(--avatar-tint) 48%, white);
+  border-radius: 50%;
+  color: var(--avatar-tint);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: calc(var(--avatar-size) * 0.36);
+  font-weight: 750;
+  height: var(--avatar-size);
+  justify-content: center;
+  line-height: 1;
+  overflow: hidden;
+  position: relative;
+  width: var(--avatar-size);
+}
+
+.avatar img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.avatarStack {
+  align-items: center;
+  display: inline-flex;
+  min-height: var(--stack-size);
+  padding-right: 0.25rem;
+}
+
+.avatarStackItem {
+  border: 2px solid rgba(249, 250, 252, 0.98);
+  margin-left: calc(var(--stack-size) * -0.25);
+}
+
+.avatarStackItem:first-child {
+  margin-left: 0;
+}
+
+.loginAvatar {
+  align-items: center;
+  background: #eef1f6;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  color: #6f788b;
+  display: inline-flex;
+  font-size: calc(var(--stack-size) * 0.3);
+  font-weight: 750;
+  height: var(--stack-size);
+  justify-content: center;
+  margin-left: calc(var(--stack-size) * -0.25);
+  text-transform: uppercase;
+  width: var(--stack-size);
+}
+
+.loginAvatar:first-child {
+  margin-left: 0;
+}
+
+.avatarOverflow {
+  align-items: center;
+  background: #242b40;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  color: #fff;
+  display: inline-flex;
+  font-size: calc(var(--stack-size) * 0.28);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  height: var(--stack-size);
+  justify-content: center;
+  margin-left: calc(var(--stack-size) * -0.25);
+  width: var(--stack-size);
+}
+
+.seatOverlay {
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+}
+
+.seatAvatar {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.seatAvatar > .avatar {
+  background: var(--live);
+  border: 2px solid #338d70;
+  border-radius: 2px;
+  box-shadow: 0 0 0 2px rgba(85, 185, 151, 0.2);
+}
+
+.connectBoard[data-still="true"] .requestCard {
+  animation: none;
+}
+
+@keyframes cardReveal {
+  from {
+    opacity: 0;
+    transform: translateY(0.35rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .requestCard,
+  .seatAvatar {
+    animation: none;
+  }
+}
+
+@media (max-width: 1300px) {
+  .highlightsStrip {
+    grid-template-columns: 5.5rem repeat(5, minmax(0, 1fr));
+    padding-inline: 1rem;
+  }
+
+  .highlightsMetric {
+    gap: 0.28rem;
+    padding-inline: 0.42rem;
+  }
+
+  .highlightsMetric span {
+    font-size: 0.61rem;
+  }
+}
